@@ -6,8 +6,6 @@
 
 import socket
 
-import groovepi
-
 def Main():
     host = '10.0.2.15'
     port = 5000
