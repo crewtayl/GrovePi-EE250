@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 import grovepi
 from grove_rgb_lcd import *
 import time
+<<<<<<< HEAD
 
 def lcd_callback(client, userdata, message):
     setRGB(0,255,0)
@@ -18,6 +19,8 @@ def led_callback(client, userdata, message):
         digitalWrite(led,1) 
     if message == "LED_OFF":
         digitalWrite(led,0)
+=======
+>>>>>>> upstream/sp18-master
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -29,7 +32,7 @@ def on_connect(client, userdata, flags, rc):
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
-    print("on_message: " + msg.topic + " " + str(msg.payload))
+    print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
 
 if __name__ == '__main__':
     button = 4
