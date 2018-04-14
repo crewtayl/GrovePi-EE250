@@ -1,0 +1,7 @@
+moving from 1 to 2:
+-1 diff will get larger then smaller
+-2 will only increase then go to 0
+
+moving from 2 to 1:
+-2 diff will get larger then smaller
+-1 diff will increase then go to 

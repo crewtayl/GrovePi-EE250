@@ -3,25 +3,21 @@
 Run rpi_pub_and_sub.py on your Raspberry Pi."""
 
 import paho.mqtt.client as mqtt
-import grovepi
 from grove_rgb_lcd import *
 import time
-<<<<<<< HEAD
-
 def lcd_callback(client, userdata, message):
     setRGB(0,255,0)
     setText(message)
     #the third argument is 'message' here unlike 'msg' in on_message 
     
 def led_callback(client, userdata, message):
-    led = 3
+    led = 2
     if message == "LED_ON":
+        print("LEDON")
         digitalWrite(led,1) 
     if message == "LED_OFF":
+        print("LEDOFF")
         digitalWrite(led,0)
-=======
->>>>>>> upstream/sp18-master
-
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
     client.subscribe("anrg-pi2/lcd")
@@ -35,8 +31,8 @@ def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
 
 if __name__ == '__main__':
-    button = 4
-    ultrasonic_ranger = 5
+    button = 8
+    ultrasonic_ranger = 3
     grovepi.pinMode(button,"INPUT")
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
