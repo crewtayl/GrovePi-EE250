@@ -1,28 +1,33 @@
 #after you `pip3 install paho-mqtt`, you can import the library successfully
 import paho.mqtt.client as mqtt
 import time
+from grovepi import *
+from grove_rgb_lcd import *
 light_on = 0
 led = 3
-dht_sensor_port = 0
+dht_sensor_port = 7
+
 """It is often best to read code starting from __main__ and reading the function 
 definitions as they show up in the code. This will help you understand the
 function defintions since you get a little more context. Jump to the __main__
 portion of this code and start reading!"""
 
 #Custom callbacks need to be structured with three args like on_message()
-def light_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
-    global light_on
-    global led
-    if(light_on):
-        grovpi.digitalWrite(led, 0)
-        light_on = 0
-    else:
-        grovepi.digitalWrite(led, 1)
-        light_on = 1
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
-    print(message.payload)
+    newMessage = (str(message.payload, "utf-8"))
+    setRGB(20,3,53)
+    setText(newMessage)
+def led_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    global led
+    pinMode(led, "OUTPUT")
+    ledLoHi = digitalRead(led)
+    print(ledLoHi)
+    if ledLoHi == 0:
+        digitalWrite(led, 1)
+    else:
+        digitalWrite(led, 0)
 """Since we attached this function to the mqtt client below, this function 
 (or "callback") will be executed when this client receives a CONNACK (i.e., 
 a connection acknowledgement packet) response from the server. """
@@ -36,12 +41,12 @@ def on_connect(client, userdata, flags, rc):
     to a topic will default to messages received on said topic triggering the 
     callback attached to client.on_message, which we assigned below in __main__.
     """
-    client.subscribe("anrg-pi2/light")
+    client.subscribe("anrg-pi02/led")
     #You can also add a custom callback to specific topics. First, you need to
     #subscribe to the topic. Then, add the callback.
-    client.subscribe("anrg-pi0/message")
-    client.message_callback_add("anrg-pi2/light", light_callback)
-    client.message_callback_add("anrg-pi2/message", message_callback)
+    client.subscribe("anrg-pi02/message")
+    client.message_callback_add("anrg-pi02/led", led_callback)
+    client.message_callback_add("anrg-pi02/message", message_callback)
 
 
 """This object (functions are objects!) serves as the default callback for 
@@ -64,12 +69,14 @@ if __name__ == '__main__':
     #create a client object
     client = mqtt.Client()
     global dht_sensor_port
+    global led
     #attach a default callback which we defined above for incoming mqtt messages
     client.on_message = on_message
 
     #attach the on_connect() callback function defined above to the mqtt client
     client.on_connect = on_connect
 
+    pinMode(led, "OUTPUT")
     """Connect using the following hostname, port, and keepalive interval (in 
     seconds). We added "host=", "port=", and "keepalive=" for illustrative 
     pourposes. You can omit this in python. For example:
@@ -100,10 +107,12 @@ if __name__ == '__main__':
     #this thread to regularly publish messages.
     time.sleep(1)
     while (True):
-            [temp,hum] = grovepi.dht(dht_sensor_port,1)
+            [temp,hum] = dht(dht_sensor_port,0)
+            print(temp)
+            print(hum)
             #publish a float
-            client.publish("anrg-pi2/temperature", temp)
-            client.publish("anrg-pi2/humidity", hum)
-        time.sleep(1)
+            client.publish("anrg-pi02/temperature", temp)
+            client.publish("anrg-pi02/humidity", hum)
+            time.sleep(1)
 
     #When you run this program, why do you see the float message first?
